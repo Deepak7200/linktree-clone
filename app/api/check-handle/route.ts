@@ -1,11 +1,14 @@
 
 import { NextRequest, NextResponse } from "next/server";
+import { connection } from "next/server";
 import clientPromise from "@/lib/mongodb";
 
 export async function GET(request: NextRequest) {
-  try {
-    const handle = request.nextUrl.searchParams.get("handle");
+  await connection();
 
+  const handle = request.nextUrl.searchParams.get("handle");
+
+  try {
     if (!handle?.trim()) {
       return NextResponse.json(
         { exists: false, message: "Please enter a handle." },
