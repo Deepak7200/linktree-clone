@@ -1,11 +1,10 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useSearchParams } from "next/navigation";
 
 type LinkItem = {
   link: string;
@@ -18,14 +17,13 @@ type ApiResult = {
 };
 
 const Generate = () => {
-  const searchParams = useSearchParams();
+
+    const [handle, setHandle] = useState<string>("");
 
   const [links, setLinks] = useState<LinkItem[]>([
     { link: "", linktext: "" },
   ]);
-  const [handle, setHandle] = useState<string>(
-    searchParams.get("handle") ?? ""
-  );
+
   const [pic, setPic] = useState<string>("");
   const [desc, setDesc] = useState<string>("");
 

@@ -30,8 +30,11 @@ const Navbar = () => {
                 </div>
 
                 <div className='flex gap-3'>
-                    <button className="login bg-gray-400 hover:bg-gray-300 p-3 rounded-lg font-bold">Log in</button>
-                    <button className="signup bg-gray-900 hover:bg-gray-700 text-white font-bold p-3 rounded-full"> Sign up free</button>
+                    <Link href="/generate" target="_blank" rel="noopener noreferrer">
+                        <button className="bg-pink-300 hover:bg-pink-400 p-3 rounded-lg font-bold">
+                        Create your Bittree
+                        </button>
+                    </Link>
                 </div>
             </nav>}
         </>

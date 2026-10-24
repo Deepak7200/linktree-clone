@@ -9,8 +9,9 @@ export default function Home() {
   const router = useRouter();
   const [text, setText] = useState<string>("");
 
-  const createTree = (): void => {
-    router.push(`/generate?handle=${encodeURIComponent(text)}`);
+  const getTree = (): void => {
+    router.push(`${process.env.NEXT_PUBLIC_HOST}/${encodeURIComponent(text)}`);
+    setText("");
   };
 
   return (
@@ -45,11 +46,12 @@ export default function Home() {
             />
 
             <button
-              onClick={createTree}
-              className="bg-pink-300 rounded-full px-4 py-4 font-semibold"
+              onClick={getTree}
+              className="bg-purple-400 hover:bg-purple-500 rounded-full px-4 py-4 font-semibold"
             >
               Claim your Bittree
             </button>
+            
           </div>
         </div>
 
@@ -63,8 +65,6 @@ export default function Home() {
           />
         </div>
       </section>
-
-      <section className="bg-red-700 min-h-[100vh]"></section>
     </main>
   );
 }
