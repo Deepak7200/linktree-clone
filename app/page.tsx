@@ -8,54 +8,104 @@ import { useRouter } from "next/navigation";
 export default function Home() {
   const router = useRouter();
   const [text, setText] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const getTree = (): void => {
-    router.push(`${process.env.NEXT_PUBLIC_HOST}/${encodeURIComponent(text)}`);
-    setText("");
+  const getTree = async (): Promise<void> => {
+    const handle = text.trim();
+
+    if (!handle) {
+      setError("Please enter a handle.");
+      return;
+    }
+
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await fetch(
+        `/api/check-handle?handle=${encodeURIComponent(handle)}`
+      );
+
+      const data: { exists?: boolean; message?: string } =
+        await response.json();
+
+      if (!response.ok) {
+        setError(data.message ?? "Something went wrong.");
+        return;
+      }
+
+      if (!data.exists) {
+        setError("This handle does not exist. Please check it.");
+        return;
+      }
+
+      router.push(
+        `${process.env.NEXT_PUBLIC_HOST}/${encodeURIComponent(handle)}`
+      );
+
+      setText("");
+    } catch {
+      setError("Unable to check the handle. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <main>
-      <section className="bg-[#254f1a] min-h-screen grid grid-cols-2 pt-32">
-        <div className="flex justify-center flex-col ml-[10vw] gap-3">
-          <p className="text-yellow-300 font-bold text-6xl">
+      <section className="grid min-h-screen grid-cols-2 bg-[#254f1a] pt-32">
+        <div className="ml-[10vw] flex flex-col justify-center gap-3">
+          <p className="text-6xl font-bold text-yellow-300">
             Everything you
           </p>
-          <p className="text-yellow-300 font-bold text-6xl">
+          <p className="text-6xl font-bold text-yellow-300">
             are. In one,
           </p>
-          <p className="text-yellow-300 font-bold text-6xl">
+          <p className="text-6xl font-bold text-yellow-300">
             simple link in bio.
           </p>
 
-          <p className="text-yellow-300 text-xl my-4">
+          <p className="my-4 text-xl text-yellow-300">
             Join 50M+ people using Linktree for their link in bio. One link to
             help you share everything you create, curate and sell from your
             Instagram, TikTok, Twitter, YouTube and other social media profiles.
           </p>
 
-          <div className="input flex gap-2">
+          <div className="flex gap-2">
             <input
               value={text}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setText(e.target.value)
-              }
-              className="px-2 py-2 bg-white rounded-md"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setText(e.target.value);
+                setError("");
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !loading) {
+                  void getTree();
+                }
+              }}
+              className="rounded-md bg-white px-2 py-2"
               type="text"
               placeholder="Enter your Handle"
             />
 
             <button
               onClick={getTree}
-              className="bg-purple-400 hover:bg-purple-500 rounded-full px-4 py-4 font-semibold"
+              disabled={loading}
+              className="rounded-full bg-purple-400 px-4 py-4 font-semibold hover:bg-purple-500 disabled:opacity-50"
             >
-              Claim your Bittree
+              {loading ? "Checking..." : "Claim your Bittree"}
             </button>
-            
           </div>
+
+          {error && (
+            <p role="alert" className="text-sm font-semibold text-red-300">
+              {error}
+            </p>
+          )}
         </div>
 
-        <div className="flex items-center justify-center flex-col mr-[10vw]">
+        <div className="mr-[10vw] flex flex-col items-center justify-center">
           <Image
             src="/home1.png"
             alt="Homepage image"
